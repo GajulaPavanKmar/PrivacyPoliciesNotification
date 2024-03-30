@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.IOException;
 
 @Controller
-public class HomeController {
+public class webScraping {
 
-
-    @RequestMapping(value = {"","/","/home"})
-    public String homePage(){
+    @Autowired
+    private WebScrapingService webScrapingService;
+    @RequestMapping(value = "/webScrap")
+    public String webScraping(Model model) throws IOException {
+        String privacy = webScrapingService.fetchPrivacyPolicy("https://www.youtube.com/");
+        model.addAttribute("content",privacy);
         return "home.html";
     }
-
-
 }

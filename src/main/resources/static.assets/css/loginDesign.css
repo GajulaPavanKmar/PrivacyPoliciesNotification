@@ -1,0 +1,27 @@
+body {
+    background: #007bff;
+    background: linear-gradient(to right, #0062E6, #33AEFF);
+}
+
+.login-container {
+    height: 100vh;
+}
+
+.login-form {
+    width: 300px;
+    background: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px #00000050;
+}
+
+.login-form h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.btn-custom {
+    background: #0062E6;
+    border: none;
+    color: #fff;
+}

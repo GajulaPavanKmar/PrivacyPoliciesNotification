@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+Websites that you are currently enrolled in
+<form th:action="@{/notificationPre}" method="post" >
+    <input type="text" name="websiteName" id="websiteName" placeholder="Website Name"
+           class="login-input" />
+    <input type="text" name="url" id="url" placeholder="URL"
+           class="login-input" />
+    <div class="col-md-8 login-center text-start">
+        <button class="btn btn-style btn-style-3 text-left">Add</button>
+    </div>
+</form>
+</body>
+</html>
