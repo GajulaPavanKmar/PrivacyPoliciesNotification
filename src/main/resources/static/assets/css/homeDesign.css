@@ -1,0 +1,39 @@
+.custom-table-height {
+    height: 500px;
+    overflow-y: auto;
+}
+
+@media (max-width: 992px) {
+    .custom-table-height {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-table-height {
+        height: 300px;
+    }
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table th, .table td {
+    text-align: left;
+    padding: 8px;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+    background-color: #eaeaea;
+}
