@@ -21,9 +21,17 @@ public class WebScrapingController {
 
     @PostMapping(value = "/scrapAndSave")
     public String scrapAndSave(@ModelAttribute("privacyOfWeb") PrivacyOfWeb privacyOfWeb, Model model) throws IOException {
-        String privacy = webScrappingService.fetchPrivacyPolicy("https://www.youtube.com/");
+        String privacy = webScrappingService.fetchPrivacyPolicy(privacyOfWeb, "https://www.w3schools.com/");
         model.addAttribute("content",privacy);
         return "redirect:/webScrap";
+    }
+
+//    This method is for the testing
+    @RequestMapping(value = "/showPolicies")
+    public String showTheContent(Model model){
+        String policy = webScrappingService.showPolicy();
+        model.addAttribute("policyContent",policy);
+        return "showPage";
     }
     @RequestMapping(value = "/webScrap")
     public String comparePrivacy(Model model){

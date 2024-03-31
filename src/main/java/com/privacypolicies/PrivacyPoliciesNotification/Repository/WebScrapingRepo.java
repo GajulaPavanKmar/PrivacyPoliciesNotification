@@ -18,15 +18,24 @@ public class WebScrapingRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int saveWebPolicy(String htmlContent){
-        String sql = "INSERT INTO PrivacyOfWeb VALUES (?,?,?,?)";
-        var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
-        return jdbcTemplate.update(sql,rowMapper);
+    public int saveWebPolicy(PrivacyOfWeb privacyOfWeb, String htmlContent){
+        String sql = "INSERT INTO PrivacyOfWeb (websiteName, websiteUrl, previousPolicy, updatedPolicy) VALUES (?,?,?,?)";
+        int count = jdbcTemplate.update(sql,privacyOfWeb.getWebsiteName(),
+                privacyOfWeb.getWebsiteUrl(), htmlContent, "");
+        return count;
     }
     public List<PrivacyOfWeb> thePreviousOne(){
         String sql = "SELECT * FROM PrivacyOfWeb";
         var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
         List<PrivacyOfWeb> values =  jdbcTemplate.query(sql,rowMapper);
         return values;
+    }
+
+    public String getPolicy() {
+        String sql  = "SELECT previousPolicy FROM PrivacyOfWeb LIMIT 2";
+        var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
+        List<PrivacyOfWeb> previousPolicy = jdbcTemplate.query(sql,rowMapper);
+        String policy = previousPolicy.toString();
+        return policy;
     }
 }

@@ -23,14 +23,15 @@ public class WebScrappingService {
 
     private static final String[] PRIVACY_KEYWORDS = {"privacy", "privacy policy"};
 
-    public String fetchPrivacyPolicy(String baseUrl) throws IOException {
+    public String fetchPrivacyPolicy( PrivacyOfWeb privacyOfWeb, String baseUrl) throws IOException {
         Document homePage = Jsoup.connect(baseUrl).get();
         Element privacyLinkElement = findPrivacyLink(homePage);
         String isSaved = "Data not saved";
         if (privacyLinkElement != null) {
             String privacyUrl = privacyLinkElement.absUrl("href");
             Document privacyPolicyPage = Jsoup.connect(privacyUrl).userAgent("\"Mozilla/5.0\"").get();
-            int noOfRowsinserted = webScrapingRepo.saveWebPolicy(privacyPolicyPage.html());
+            String policyText = privacyPolicyPage.text();
+            int noOfRowsinserted = webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
 
             if(noOfRowsinserted>0){
                 isSaved = "This version of policy saved";
@@ -74,5 +75,10 @@ public class WebScrappingService {
         } else {
             return differences.toString();
         }
+    }
+
+    public String showPolicy() {
+        String policy = webScrapingRepo.getPolicy();
+        return policy;
     }
 }
