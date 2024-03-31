@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/scrapAndSave}" method="post">
+    <input type="text" name="websiteName" id="websiteName" placeholder="Enter the website name">
+    <input type="text" name="websiteUrl" id="websiteUrl" placeholder="Enter the website URL">
+
+<button type="submit">Submit</button>
+</form>
+</body>
+</html>
