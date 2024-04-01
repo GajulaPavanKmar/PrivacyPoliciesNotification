@@ -1,0 +1,41 @@
+@charset "UTF-8";
+
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+.jumbotron {
+    background-color: #004085;
+    color: #ffffff;
+}
+
+.card {
+    border: none;
+}
+
+.card-title {
+    color: #007bff;
+}
+
+footer {
+    background-color: #343a40;
+}
+
+footer p {
+    margin-bottom: 0;
+    color: #b0b0b0;
+}
+
+.btn-light.btn-lg {
+    background-color: #ffffff;
+    color: #007bff;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.btn-light.btn-lg:hover, .btn-light.btn-lg:focus {
+    background-color: #e2e6ea;
+    color: #0056b3;
+}

@@ -4,6 +4,7 @@ import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.Patch;
 import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
 import com.privacypolicies.PrivacyPoliciesNotification.Repository.WebScrapingRepo;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,23 +24,33 @@ public class WebScrappingService {
 
     private static final String[] PRIVACY_KEYWORDS = {"privacy", "privacy policy"};
 
-    public String fetchPrivacyPolicy( PrivacyOfWeb privacyOfWeb, String baseUrl) throws IOException {
-        Document homePage = Jsoup.connect(baseUrl).get();
-        Element privacyLinkElement = findPrivacyLink(homePage);
+    public String fetchPrivacyPolicy(PrivacyOfWeb privacyOfWeb, String baseUrl) {
         String isSaved = "Data not saved";
-        if (privacyLinkElement != null) {
-            String privacyUrl = privacyLinkElement.absUrl("href");
-            Document privacyPolicyPage = Jsoup.connect(privacyUrl).userAgent("\"Mozilla/5.0\"").get();
-            String policyText = privacyPolicyPage.text();
-            int noOfRowsinserted = webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+        try {
+            Document homePage = Jsoup.connect(baseUrl).get();
+            Element privacyLinkElement = findPrivacyLink(homePage);
 
-            if(noOfRowsinserted>0){
-                isSaved = "This version of policy saved";
+            if (privacyLinkElement != null) {
+                String privacyUrl = privacyLinkElement.absUrl("href");
+                Document privacyPolicyPage = Jsoup.connect(privacyUrl)
+                        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+                        .timeout(10 * 1000)
+                        .get();
+                String policyText = privacyPolicyPage.text();
+                int noOfRowsInserted = webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+
+                if (noOfRowsInserted > 0) {
+                    isSaved = "This version of policy saved";
+                }
             }
-            return isSaved;
+        } catch (HttpStatusException e) {
+            isSaved = "HTTP error fetching URL. Status=" + e.getStatusCode() + ", URL=" + e.getUrl();
+        } catch (IOException e) {
+            isSaved = "Error fetching URL: " + e.getMessage();
         }
         return isSaved;
     }
+
 
     private Element findPrivacyLink(Document document) {
         Elements links = document.select("a[href]");
