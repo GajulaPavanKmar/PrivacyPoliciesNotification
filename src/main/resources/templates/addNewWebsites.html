@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Privacy Policy Notification Service</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="/assets/css/dashBoardDesign.css">
+    <link rel="stylesheet" th:href="@{/assets/css/homeDesign.css}" />
+
 </head>
 <body>
+<div th:replace="~{loginHeader :: header}">...</div>
 
 <div class="container mt-5">
     <div class="row">
@@ -22,7 +24,7 @@
                     <label for="websiteUrl" class="form-label">Website URL</label>
                     <input type="text" class="form-control" name="websiteUrl" id="websiteUrl" placeholder="Enter the website URL" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-light btn-lg custom-btn">Submit</button>
             </form>
         </div>
     </div>

@@ -1,18 +1,16 @@
-body {
-    font-family: 'Lato', sans-serif;
-    background-color: #f8f9fa;
+
+.login-image {
+    max-width: 50%; /* ensures image is responsive and doesn't overflow its container */
+    height: auto; /* maintain aspect ratio */
 }
 
-.card {
-    border: 1px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+/* Remove spacing between columns */
+.no-gutters .col-md-6 {
+    padding-right: 0;
+    padding-left: 0;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-}
-
-.btn-primary:hover, .btn-primary:focus {
-    background-color: #0056b3;
+/* Optional: Adjust margins if necessary */
+.no-gutters .card {
+    margin-left: -15px; /* Adjust this value as needed */
 }

@@ -1,39 +1,65 @@
-.custom-table-height {
-    height: 500px;
-    overflow-y: auto;
+/* custom-styles.css */
+html {
+    height: 100%;
 }
 
-@media (max-width: 992px) {
-    .custom-table-height {
-        height: 400px;
-    }
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
 }
 
-@media (max-width: 768px) {
-    .custom-table-height {
-        height: 300px;
-    }
+
+.navbar-custom {
+    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
-.table {
-    border-collapse: collapse;
-    width: 100%;
+.navbar-brand img {
+    height: 40px;
+}
+.navbar-nav .nav-link {
+    color: black !important;
+}
+header {
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
 }
 
-.table th, .table td {
-    text-align: left;
-    padding: 8px;
+.jumbotron.bg-primary {
+    background-color: white !important;
+    color: #0b0b0b !important;/* Update the text color if needed */
 }
 
-.table th {
-    background-color: #f2f2f2;
-    color: #333;
+.custom-btn {
+    background-color: #FF9900; /* Sets the background color to orange */
+    border-color: #FF9900; /* Optional: sets the border color to orange if there is a border */
+    color: white; /* Sets the text color to white for better readability */
+    padding: 0.75rem;
+    font-size: 1rem;
 }
 
-.table tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
+.custom-btn:hover {
+    background-color: darkorange; /* Darker orange when hovering for a nice effect */
+    border-color: darkorange; /* Optional: sets the border color to a darker orange on hover */
+
 }
 
-.table tbody tr:hover {
-    background-color: #eaeaea;
+.card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out; /* Add transition effect here */
+}
+
+.card-body {
+    flex: 1;
+}
+
+.card:hover {
+    transform: translateY(-10px); /* Hover effect */
+}
+
+footer.bg-dark {
+    margin-top: auto; /* Pushes the footer to the bottom */
 }

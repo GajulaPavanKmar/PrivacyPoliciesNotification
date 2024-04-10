@@ -1,36 +1,88 @@
+
 body {
-    background-color: red;
+    background-color: #f4f4f4;
+    color: #333;
+    font-family: 'Arial', sans-serif;
 }
 
-h2 {
-    color:red ;
+.container {
+    background-color: #ffffff;
+    padding: 1rem; /* rem unit for scalable padding */
+    border-radius: 0.5rem; /* rem unit for consistent border-radius */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
-.form-label {
-    font-weight: 500;
+h2, h3, h4 {
+    color: #0056b3; /* A color that could match your brand */
+    margin-bottom: 1rem; /* rem unit for scalable margin */
 }
 
-.btn-primary {
+/* Style for the link to add new websites */
+a {
+    display: inline-block;
+    margin-bottom: 1rem; /* rem unit for scalable margin */
+    padding: 0.5rem 1rem; /* rem unit for scalable padding */
     background-color: #007bff;
-    border: none;
+    color: #ffffff;
+    border-radius: 0.25rem; /* rem unit for consistent border-radius */
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover, .btn-primary:focus {
+a:hover {
     background-color: #0056b3;
 }
 
+/* Table Styles */
 .table {
-    table-layout: fixed;
-    width: 100%;
+    margin-top: 1rem; /* rem unit for scalable margin */
+    border-collapse: collapse;
+    width: 100%; /* Percentage for responsive width */
 }
 
-.table th, .table td {
-    word-wrap: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 0;
+.table th,
+.table td {
+    padding: 0.75rem; /* rem unit for scalable padding */
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
 }
 
-.table .policy-cell {
-    max-width: 200px;
+.table th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
 }
+
+/* Responsive table styles */
+@media (max-width: 768px) {
+    .custom-table-height {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+/* Table Styles */
+.table-responsive {
+    max-height: 20rem; /* Adjust the max height as needed */
+    overflow-y: auto; /* Adds a vertical scrollbar when content exceeds the max-height */
+    margin-top: 1rem; /* rem unit for scalable margin */
+    border-collapse: collapse;
+}
+
+.table {
+    width: 100%; /* Percentage for responsive width */
+}
+
+.table th,
+.table td {
+    padding: 0.75rem; /* rem unit for scalable padding */
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.table th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+

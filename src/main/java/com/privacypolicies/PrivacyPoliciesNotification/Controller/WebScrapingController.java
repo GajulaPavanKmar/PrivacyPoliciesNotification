@@ -26,7 +26,7 @@ public class WebScrapingController {
     public String scrapAndSave(@ModelAttribute("privacyOfWeb") PrivacyOfWeb privacyOfWeb,
                                User user,
                                Model model) throws IOException {
-        String privacy = webScrappingService.fetchPrivacyPolicy(privacyOfWeb, privacyOfWeb.getWebsiteUrl());
+        String privacy = webScrappingService.scrapePrivacyPolicy(privacyOfWeb, privacyOfWeb.getWebsiteUrl());
         String emailBody = String.format(
                         "Hello, Pavan " +
                         "\n\nYou have addes new website into your list Please find the details below." +
@@ -35,7 +35,6 @@ public class WebScrapingController {
                                 "\n Notification Team",
                 privacyOfWeb.getWebsiteName(), privacyOfWeb.getWebsiteUrl()
         );
-//        String emailAddress = user.getUserEmail();
         model.addAttribute("content",privacy);
         try {
             emailService.sendSimpleMessage(
@@ -46,7 +45,6 @@ public class WebScrapingController {
             model.addAttribute("emailStatus", "Email sent successfully");
         } catch (Exception e) {
             model.addAttribute("emailStatus", "Failed to send email");
-            // Log the exception or handle it accordingly
         }
         return "redirect:/dashboard";
     }

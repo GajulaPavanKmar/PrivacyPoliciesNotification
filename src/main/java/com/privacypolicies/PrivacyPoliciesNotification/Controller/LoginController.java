@@ -35,4 +35,16 @@ public class LoginController {
         model.addAttribute("error", "Invalid email or password");
         return "signin";
     }
+
+    @GetMapping(value = "/signUp")
+    public String signUp(){
+        return "signUpPage";
+    }
+
+    @PostMapping(value = "/signUp")
+    public String createAccount(@ModelAttribute("user") User user,  Model model){
+        User createAccount = userService.createNewAccount(user);
+        return "loginPage";
+    }
+
 }
