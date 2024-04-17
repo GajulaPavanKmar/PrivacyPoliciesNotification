@@ -12,35 +12,29 @@
 <div th:replace="~{header :: header}">...</div>
 
 <div class="container mt-5">
-    <h2 >Welcome User's Dashboard</h2>
+    <h2 class="mb-4">Dashboard</h2>
     <div class="row">
         <div class="col-md-12">
-            <a th:href="@{/addNewWebsites}" class="btn btn-light btn-lg custom-btn">Add new website</a>
-            <h4 th:text="${content}"></h4>
-            <h4 th:text="${emailStatus}"></h4>
-            <h3 class="mb-3">Your Websites</h3>
 
             <table class="table custom-table-height">
                 <thead>
                 <tr>
                     <th>Website Name</th>
                     <th>Website URL</th>
-                    <!--<th>Updated Policy</th>
-                    <th>Previous Policy</th>-->
+                    <th>Updated Policy</th>
+                    <th>Previous Policy</th>
                 </tr>
                 </thead>
                 <div class="table-responsive">
-                <tbody>
-                <tr th:each="website : ${listOfValues}">
-                    <td>
-                        <a th:href="@{'/changeDetection/' + ${website.websiteId}}" th:text="${website.websiteName}"
-                           th:id="${'websiteLink' + website.websiteId}"></a>
-                    </td>
-                    <td th:text="${website.websiteUrl}">Website URL Placeholder</td>
-                    <!--<td th:text="${website.updatedPolicy}">Updated Policy Placeholder</td>
-                    <td th:text ="${website.previousPolicy}">Previous Policy Placeholder</td>-->
-                </tr>
-                </tbody>
+                    <tbody>
+                    <tr th:each="website : ${listOfValues}">
+                        <td th:text="${website.websiteName}">
+                        </td>
+                        <td th:text="${website.websiteUrl}">Website URL Placeholder</td>
+                        <td th:text="${website.updatedPolicy}">Updated Policy Placeholder</td>
+                        <td th:text ="${website.previousPolicy}">Previous Policy Placeholder</td>
+                    </tr>
+                    </tbody>
                 </div>
             </table>
         </div>

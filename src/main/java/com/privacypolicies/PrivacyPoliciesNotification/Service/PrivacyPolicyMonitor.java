@@ -1,25 +1,34 @@
 package com.privacypolicies.PrivacyPoliciesNotification.Service;
 
+
 import com.privacypolicies.PrivacyPoliciesNotification.Configuration.HashUtilConfig;
+import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
+import com.privacypolicies.PrivacyPoliciesNotification.Repository.PrivacyPolicyMonitorRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
+@Service
 public class PrivacyPolicyMonitor {
-    public static void checkForUpdates(String currentPolicyText) {
-        try {
-            String currentHash = HashUtilConfig.generateSha256Hash(currentPolicyText);
-            // Assume `lastHash` is retrieved from your storage (e.g., file, database)
-            String lastHash = "..."; // Retrieve the last hash from where you stored it
 
+    @Autowired
+    private PrivacyPolicyMonitorRepo privacyPolicyMonitorRepo;
+
+    public String checkForUpdates(String storedPolicy, String currentPolicy, int websiteId) {
+        try {
+            String currentHash = HashUtilConfig.generateSha256Hash(storedPolicy);
+            String lastHash = HashUtilConfig.generateSha256Hash(currentPolicy); // Retrieve the last hash from where you stored it
             if (!currentHash.equals(lastHash)) {
-                System.out.println("Privacy policy has changed.");
-                // Proceed to store `currentHash` for next time's comparison
-                // and handle the change (e.g., notify users, analyze changes)
+                int updatePolicy = privacyPolicyMonitorRepo.updatePolicies(storedPolicy, currentPolicy, websiteId);
+                return "Privacy policy has changed.";
+
             } else {
-                System.out.println("No changes detected in the privacy policy.");
+                return "No changes detected in the privacy policy.";
             }
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            return "Error while checking for updates.";
         }
     }
 }

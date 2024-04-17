@@ -43,15 +43,15 @@ public class WebScrappingService {
     private static final String[] PRIVACY_KEYWORDS = {"privacy", "privacy policy"};
 
 
-    public String scrapePrivacyPolicy(PrivacyOfWeb privacyOfWeb, String url) {
-        String scrapedPolicy = scrapeWithJsoup(privacyOfWeb, url);
+    public String scrapePrivacyPolicy(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
+        String scrapedPolicy = scrapeWithJsoup(privacyOfWeb, url, store);
         if (scrapedPolicy == null) {
-            scrapedPolicy = scrapeWithSelenium(privacyOfWeb, url);
+            scrapedPolicy = scrapeWithSelenium(privacyOfWeb, url, store);
         }
         return scrapedPolicy != null ? scrapedPolicy : "Privacy policy not found.";
     }
 
-    private String scrapeWithJsoup(PrivacyOfWeb privacyOfWeb, String url) {
+    private String scrapeWithJsoup(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
         try {
             Document homepage = Jsoup.connect(url).get();
             Element privacyLinkElement = findPrivacyLink(homepage);
@@ -63,7 +63,9 @@ public class WebScrappingService {
                         .get();
                 String policyText = privacyPolicyPage.text();
                 if (!policyText.isEmpty()) {
-                    webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+                    if(store){
+                        webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+                    }
                     return policyText;
                 }
             }
@@ -72,21 +74,23 @@ public class WebScrappingService {
         } catch (Exception e) {
             log.error("Unexpected error occurred", e);
         }
-        return null; // Indicate that Jsoup failed
+        return null;
     }
 
-    private String scrapeWithSelenium(PrivacyOfWeb privacyOfWeb, String url) {
+    private String scrapeWithSelenium(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
         webDriver.get(url);
         WebElement privacyPolicyLink = findPrivacyPolicyLink(webDriver);
         if (privacyPolicyLink != null) {
             privacyPolicyLink.click();
-            new WebDriverWait(webDriver, Duration.ofSeconds(10))
+            new WebDriverWait(webDriver, Duration.ofSeconds(5))
                     .until(webDriver1 -> ((JavascriptExecutor) webDriver1)
                             .executeScript("return document.readyState")
                             .equals("complete"));
             String privacyPolicy = extractPrivacyPolicyText();
             if (!privacyPolicy.isEmpty()) {
-                webScrapingRepo.saveWebPolicy(privacyOfWeb, privacyPolicy);
+                if(store){
+                    webScrapingRepo.saveWebPolicy(privacyOfWeb, privacyPolicy);
+                }
                 return privacyPolicy;
             }
         }
@@ -123,7 +127,7 @@ public class WebScrappingService {
 
 
     private WebElement findPrivacyPolicyLink(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         List<String> linkTexts = Arrays.asList(
                 "Privacy Policy", "Privacy Notice", "Privacy",
                 "Privacy and Cookies", "Data Protection"
@@ -136,7 +140,7 @@ public class WebScrappingService {
             WebElement partialLinkElement = tryFindElement(wait, By.partialLinkText(linkText));
             if (partialLinkElement != null) return partialLinkElement;
         }
-        return null; // Return null if no matching link is found
+        return null;
     }
 
     private WebElement tryFindElement(WebDriverWait wait, By by) {
@@ -148,7 +152,6 @@ public class WebScrappingService {
     }
 
     private Element findPrivacyLink(Document document) {
-        // Define more specific selectors that target likely containers of privacy policy links
         String[] cssSelectors = new String[]{
                 "footer a[href]", // Privacy links are often in the footer
                 "nav a[href]", // Or in the main navigation
@@ -164,7 +167,6 @@ public class WebScrappingService {
                         .filter(link -> link.text().toLowerCase().contains(keyword.toLowerCase()))
                         .collect(Collectors.toCollection(Elements::new));
                 if (!foundLinks.isEmpty()) {
-                    // Return the first match
                     return foundLinks.first();
                 }
             }

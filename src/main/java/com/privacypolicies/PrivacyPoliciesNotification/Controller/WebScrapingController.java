@@ -4,6 +4,7 @@ import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
 import com.privacypolicies.PrivacyPoliciesNotification.Model.User;
 import com.privacypolicies.PrivacyPoliciesNotification.Service.EmailService;
 import com.privacypolicies.PrivacyPoliciesNotification.Service.WebScrappingService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import java.io.IOException;
 @Controller
 public class WebScrapingController {
 
+
     @Autowired
     private WebScrappingService webScrappingService;
 
@@ -24,28 +26,34 @@ public class WebScrapingController {
     private EmailService emailService;
     @PostMapping(value = "/scrapAndSave")
     public String scrapAndSave(@ModelAttribute("privacyOfWeb") PrivacyOfWeb privacyOfWeb,
-                               User user,
+                               HttpSession session,
                                Model model) throws IOException {
-        String privacy = webScrappingService.scrapePrivacyPolicy(privacyOfWeb, privacyOfWeb.getWebsiteUrl());
-        String emailBody = String.format(
-                        "Hello, Pavan " +
-                        "\n\nYou have addes new website into your list Please find the details below." +
-                        "\n\nWebsite Name: %s\nWebsite URL: %s\n\nChange in privacy policies detected." +
-                                "\n\n\n Thank & Regards" +
-                                "\n Notification Team",
-                privacyOfWeb.getWebsiteName(), privacyOfWeb.getWebsiteUrl()
-        );
-        model.addAttribute("content",privacy);
-        try {
-            emailService.sendSimpleMessage(
-                    "pavangajula1998@gmail.com",
-                    "New website was added to your list",
-                    emailBody
+        User user = (User) session.getAttribute("user");
+        privacyOfWeb.setUser(user);
+        String privacy = webScrappingService.scrapePrivacyPolicy(privacyOfWeb, privacyOfWeb.getWebsiteUrl(), true);
+        if(!privacy.equals("")){
+            String emailBody = String.format(
+                    "Hello, Pavan " +
+                            "\n\nYou have addes new website into your list Please find the details below." +
+                            "\n\nWebsite Name: %s\nWebsite URL: %s\n\nChange in privacy policies detected." +
+                            "\n\n\n Thank & Regards" +
+                            "\n Notification Team",
+                    privacyOfWeb.getWebsiteName(), privacyOfWeb.getWebsiteUrl()
             );
-            model.addAttribute("emailStatus", "Email sent successfully");
-        } catch (Exception e) {
-            model.addAttribute("emailStatus", "Failed to send email");
+            model.addAttribute("content",privacy);
+            String emailAddress = user.getUserEmail();
+            try {
+                emailService.sendSimpleMessage(
+                        emailAddress,
+                        "New website was added to your list",
+                        emailBody
+                );
+                model.addAttribute("emailStatus", "Email sent successfully");
+            } catch (Exception e) {
+                model.addAttribute("emailStatus", "Failed to send email");
+            }
         }
+
         return "redirect:/dashboard";
     }
 

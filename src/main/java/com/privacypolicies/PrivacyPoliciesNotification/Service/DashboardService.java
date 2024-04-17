@@ -17,4 +17,11 @@ public class DashboardService {
         return dashboardRepository.userWebsites();
     }
 
+    public String previousPolicy(Long websiteId) {
+        return dashboardRepository.getThePolicy(websiteId);
+    }
+
+    public PrivacyOfWeb specificWebsite(Long websiteId) {
+        return dashboardRepository.specificWebisteDetails(websiteId);
+    }
 }
