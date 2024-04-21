@@ -22,14 +22,14 @@ public class DashboardRepository {
     }
 
     public List<PrivacyOfWeb> userWebsites(){
-        String sql = "SELECT * FROM PrivacyOfWeb";
+        String sql = "SELECT * FROM privacyofweb";
         var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
         List<PrivacyOfWeb> values =  jdbcTemplate.query(sql,rowMapper);
         return values;
     }
 
     public String getThePolicy(Long websiteId) {
-        String sql = "SELECT COALESCE(previous_policy, updated_policy) AS policy FROM PrivacyOfWeb WHERE website_id = ?";
+        String sql = "SELECT COALESCE(current_policy,previous_policy) AS policy FROM privacyofweb WHERE website_id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Object[]{websiteId}, String.class);
         } catch (EmptyResultDataAccessException e) {
@@ -41,7 +41,7 @@ public class DashboardRepository {
     }
 
     public PrivacyOfWeb specificWebisteDetails(Long websiteId) {
-        String sql = "SELECT * FROM PrivacyOfWeb where website_id = ?";
+        String sql = "SELECT * FROM privacyofweb where website_id = ?";
         var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
         return jdbcTemplate.queryForObject(sql, new Object[]{websiteId}, rowMapper);
     }

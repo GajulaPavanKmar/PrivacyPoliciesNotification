@@ -28,6 +28,6 @@ public class PrivacyOfWeb {
     @Column(name = "previous_policy")
     private String previousPolicy;
 
-    @Column(name = "updated_policy")
-    private String updatedPolicy;
+    @Column(name = "current_policy")
+    private String currentPolicy;
 }

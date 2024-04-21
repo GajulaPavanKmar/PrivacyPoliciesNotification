@@ -2,13 +2,11 @@ package com.privacypolicies.PrivacyPoliciesNotification.Service;
 
 
 import com.privacypolicies.PrivacyPoliciesNotification.Configuration.HashUtilConfig;
-import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
 import com.privacypolicies.PrivacyPoliciesNotification.Repository.PrivacyPolicyMonitorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 @Service
 public class PrivacyPolicyMonitor {
@@ -23,6 +21,7 @@ public class PrivacyPolicyMonitor {
             if (!currentHash.equals(lastHash)) {
                 int updatePolicy = privacyPolicyMonitorRepo.updatePolicies(storedPolicy, currentPolicy, websiteId);
                 return "Privacy policy has changed.";
+
 
             } else {
                 return "No changes detected in the privacy policy.";

@@ -34,8 +34,8 @@ public class WebScrapingController {
         if(!privacy.equals("") ){
             String emailBody = String.format(
                     "Hello, Pavan " +
-                            "\n\nYou have addes new website into your list Please find the details below." +
-                            "\n\nWebsite Name: %s\nWebsite URL: %s\n\nChange in privacy policies detected." +
+                            "\n\nYou have added new website into your list Please find the details below." +
+                            "\n\nWebsite Name: %s\nWebsite URL: %s\n\n" +
                             "\n\n\n Thank & Regards" +
                             "\n Notification Team",
                     privacyOfWeb.getWebsiteName(), privacyOfWeb.getWebsiteUrl()

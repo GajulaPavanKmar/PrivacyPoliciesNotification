@@ -160,10 +160,17 @@ public class WebScrappingService {
 
     private WebDriver setupWebDriver() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("start-maximized"); // Start browser maximized, using this for non-headless mode
-        options.setPageLoadStrategy(PageLoadStrategy.NORMAL); // Adjust page load strategy as needed
+        options.addArguments("--headless"); // Essential for running on a server without GUI
+        options.addArguments("--no-sandbox"); // Security model workaround, may be necessary in certain environments
+        options.addArguments("--disable-dev-shm-usage"); // Avoid issues in limited resource environments
+        options.addArguments("--window-size=1920,1080"); // Specify a window size in headless mode
+
+        // If you need to set a specific page load strategy
+        options.setPageLoadStrategy(PageLoadStrategy.NORMAL); // Adjust this as per your requirements
+
         return new ChromeDriver(options);
     }
+
 
 
     private String scrapePrivacyPolicyContent(PrivacyOfWeb privacyOfWeb, String privacyUrl, boolean store) {
@@ -228,7 +235,7 @@ public class WebScrappingService {
 
         for( PrivacyOfWeb listValue : listValues){
             String prevPolicy = listValue.getPreviousPolicy();
-            String updatedPolicy = listValue.getUpdatedPolicy();
+            String updatedPolicy = listValue.getCurrentPolicy();
 
             List<String> original = Arrays.asList(prevPolicy.split("/n"));
             List<String> revised = Arrays.asList(updatedPolicy.split("/n"));

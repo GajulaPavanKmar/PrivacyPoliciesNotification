@@ -24,21 +24,21 @@ public class WebScrapingRepo {
             throw new IllegalStateException("PrivacyOfWeb must have a non-null User with a non-null userId");
         }
 
-        String sql = "INSERT INTO PrivacyOfWeb (user_ID,website_Name,  website_Url, previous_Policy, updated_Policy) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO privacyofweb (user_ID,website_Name,  website_Url, previous_Policy, current_Policy) VALUES (?,?,?,?,?)";
 
         int count = jdbcTemplate.update(sql,privacyOfWeb.getUser().getUserId(), privacyOfWeb.getWebsiteName(),
-                privacyOfWeb.getWebsiteUrl(), htmlContent, "");
+                privacyOfWeb.getWebsiteUrl(), "", htmlContent);
         return count;
     }
     public List<PrivacyOfWeb> thePreviousOne(){
-        String sql = "SELECT * FROM PrivacyOfWeb";
+        String sql = "SELECT * FROM privacyofweb";
         var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
         List<PrivacyOfWeb> values =  jdbcTemplate.query(sql,rowMapper);
         return values;
     }
 
     public String getPolicy() {
-        String sql  = "SELECT previousPolicy FROM PrivacyOfWeb LIMIT 2";
+        String sql  = "SELECT previousPolicy FROM privacyofweb LIMIT 2";
         var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
         List<PrivacyOfWeb> previousPolicy = jdbcTemplate.query(sql,rowMapper);
         String policy = previousPolicy.toString();

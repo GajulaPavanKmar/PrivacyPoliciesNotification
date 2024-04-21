@@ -3,10 +3,7 @@ package com.privacypolicies.PrivacyPoliciesNotification.Controller;
 import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
 import com.privacypolicies.PrivacyPoliciesNotification.Model.User;
 import com.privacypolicies.PrivacyPoliciesNotification.Repository.UserRepository;
-import com.privacypolicies.PrivacyPoliciesNotification.Service.DashboardService;
-import com.privacypolicies.PrivacyPoliciesNotification.Service.OpenNlpService;
-import com.privacypolicies.PrivacyPoliciesNotification.Service.PrivacyPolicyMonitor;
-import com.privacypolicies.PrivacyPoliciesNotification.Service.WebScrappingService;
+import com.privacypolicies.PrivacyPoliciesNotification.Service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +27,9 @@ public class ChangeDetectionController {
     @Autowired
     private WebScrappingService webScrappingService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("/changeDetection/{websiteId}")
     public String changeDetection(@PathVariable("websiteId") Long websiteId, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -43,9 +43,28 @@ public class ChangeDetectionController {
             currentPolicy = webScrappingService.scrapePrivacyPolicy(userWebsite, userWebsite.getWebsiteUrl(), false);
             if(!(currentPolicy.equals(""))) {
                 change = privacyPolicyMonitor.checkForUpdates(storedPolicy,currentPolicy, userWebsite.getWebsiteId());
+                String emailBody = String.format(
+                        "Hello, Pavan " +
+                                "\n\nWe have detected a change in the privacy policy in " +
+                                "\n\nWebsite Name: %s\nWebsite URL: %s\n\nChange in privacy policies detected." +
+                                "\n\n\nThank & Regards" +
+                                "\nNotification Team",
+                        userWebsite.getWebsiteName(), userWebsite.getWebsiteUrl()
+                );
+                String emailAddress = user.getUserEmail();
+                try {
+                    emailService.sendSimpleMessage(
+                            emailAddress,
+                            "New website was added to your list",
+                            emailBody
+                    );
+                    model.addAttribute("emailStatus", "Email sent successfully");
+                } catch (Exception e) {
+                    model.addAttribute("emailStatus", "Failed to send email");
+                }
             }
         }
-        
+        userWebsite = dashboardService.specificWebsite(websiteId);
         model.addAttribute("listOfValues",userWebsite);
         return "LoggedInUserPages/websiteDifference";
     }
