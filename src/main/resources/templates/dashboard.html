@@ -10,23 +10,27 @@
 </head>
 <body>
 <div th:replace="~{header :: header}">...</div>
-
+<div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <p th:text="${msg}"></p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <div class="container mt-5">
-    <h2 >Welcome User's Dashboard</h2>
+    <h2 >Welcome to Privacy Notifier</h2>
     <div class="row">
         <div class="col-md-12">
             <a th:href="@{/addNewWebsites}" class="btn btn-light btn-lg custom-btn">Add new website</a>
             <h4 th:text="${content}"></h4>
             <h4 th:text="${emailStatus}"></h4>
+            <br>
             <h3 class="mb-3">Your Websites</h3>
 
-            <table class="table custom-table-height">
-                <thead>
+            <table class="table table-bordered border border-dark table-striped custom-table-height">
+                <thead class="table-dark">
                 <tr>
                     <th>Website Name</th>
                     <th>Website URL</th>
-                    <!--<th>Updated Policy</th>
-                    <th>Previous Policy</th>-->
+                    <th>Edit</th>
+                    <th>Delete</th>
                 </tr>
                 </thead>
                 <div class="table-responsive">
@@ -37,8 +41,17 @@
                            th:id="${'websiteLink' + website.websiteId}"></a>
                     </td>
                     <td th:text="${website.websiteUrl}">Website URL Placeholder</td>
-                    <!--<td th:text="${website.updatedPolicy}">Updated Policy Placeholder</td>
-                    <td th:text ="${website.previousPolicy}">Previous Policy Placeholder</td>-->
+                    <td>
+                        <a th:href="@{'/editWebsite/' + ${website.websiteId}}" class="btn" title="Edit">
+                            <img src="images/edit-icon.svg" th:src="@{/assets/images/edit.svg}" alt="Edit" width="24" height="24"/>
+                        </a>
+                    </td>
+                    <td>
+                        <a th:href="@{'/deleteWebsite/' + ${website.websiteId}}" class="btn" onclick="return confirm('Are you sure you want to delete this?')" title="Delete">
+                            <img src="images/delete-icon.svg" th:src="@{/assets/images/delete.svg}" alt="Delete" width="24" height="24"/>
+                        </a>
+                    </td>
+
                 </tr>
                 </tbody>
                 </div>

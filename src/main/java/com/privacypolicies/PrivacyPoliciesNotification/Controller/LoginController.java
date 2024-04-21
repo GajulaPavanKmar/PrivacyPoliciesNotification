@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class LoginController {
@@ -15,7 +16,7 @@ public class LoginController {
     private UserService userService;
 
     @Autowired
-    public LoginController(@Lazy UserService userService){
+    public LoginController(UserService userService){
         this.userService = userService;
     }
 
@@ -32,12 +33,12 @@ public class LoginController {
     }
 
     @PostMapping(value = "/signUp")
-    public String createAccount(@ModelAttribute("user") User user,  Model model){
+    public String createAccount(@ModelAttribute("user") User user,  RedirectAttributes redirectAttributes){
         User createAccount = userService.createNewAccount(user);
         if(createAccount != null){
-            model.addAttribute("Your account created","msg");
+            redirectAttributes.addFlashAttribute("msg","Your account created");
         }else{
-            model.addAttribute("Unable to account created","msg");
+            redirectAttributes.addFlashAttribute("msg","Unable to account created");
         }
         return "redirect:/login";
     }

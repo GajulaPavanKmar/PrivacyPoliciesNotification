@@ -1,4 +1,3 @@
-
 body {
     background-color: #f4f4f4;
     color: #333;
@@ -7,82 +6,60 @@ body {
 
 .container {
     background-color: #ffffff;
-    padding: 1rem; /* rem unit for scalable padding */
-    border-radius: 0.5rem; /* rem unit for consistent border-radius */
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 
-h2, h3, h4 {
-    color: #0056b3; /* A color that could match your brand */
-    margin-bottom: 1rem; /* rem unit for scalable margin */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-/* Style for the link to add new websites */
-a {
-    display: inline-block;
-    margin-bottom: 1rem; /* rem unit for scalable margin */
-    padding: 0.5rem 1rem; /* rem unit for scalable padding */
-    background-color: #007bff;
-    color: #ffffff;
-    border-radius: 0.25rem; /* rem unit for consistent border-radius */
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+.dashboard-header h2 {
+    color: #0056b3;
+    margin-bottom: 0;
 }
 
-a:hover {
-    background-color: #0056b3;
+.btn-outline-primary {
+    border: 2px solid;
+    font-weight: bold;
 }
 
-/* Table Styles */
 .table {
-    margin-top: 1rem; /* rem unit for scalable margin */
-    border-collapse: collapse;
-    width: 100%; /* Percentage for responsive width */
+    margin-top: 1rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
 }
 
 .table th,
 .table td {
-    padding: 0.75rem; /* rem unit for scalable padding */
-    vertical-align: top;
+    text-align: left;
+    padding: 0.75rem;
     border-top: 1px solid #dee2e6;
 }
 
-.table th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
-    background-color: #f8f9fa;
+.icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
 }
 
-/* Responsive table styles */
 @media (max-width: 768px) {
-    .custom-table-height {
-        display: block;
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-header a {
+        margin-top: 1rem;
+    }
+
+    .table-responsive {
         overflow-x: auto;
-        white-space: nowrap;
     }
 }
-/* Table Styles */
-.table-responsive {
-    max-height: 20rem; /* Adjust the max height as needed */
-    overflow-y: auto; /* Adds a vertical scrollbar when content exceeds the max-height */
-    margin-top: 1rem; /* rem unit for scalable margin */
-    border-collapse: collapse;
-}
-
-.table {
-    width: 100%; /* Percentage for responsive width */
-}
-
-.table th,
-.table td {
-    padding: 0.75rem; /* rem unit for scalable padding */
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
-}
-
-.table th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
-    background-color: #f8f9fa;
-}
-

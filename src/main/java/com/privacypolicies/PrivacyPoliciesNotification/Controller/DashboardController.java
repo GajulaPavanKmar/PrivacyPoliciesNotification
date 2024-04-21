@@ -13,10 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -63,26 +61,38 @@ public class DashboardController {
     public String profilePage(Model model,HttpSession session){
         User sessionUser = (User) session.getAttribute("user");
         if(sessionUser == null){
-            model.addAttribute("user", sessionUser);
-        }else{
             return "redirect:/login";
+        }else{
+            model.addAttribute("user", sessionUser);
+            return "LoggedInUserPages/profilePage";
         }
-        return "LoginPages/profilePage";
     }
 
-    /*@PutMapping(value = "updateProfile")
-    public String updateProfilePage(@ModelAttribute("user") User user, Model model,HttpSession session){
+    @PostMapping(value = "/updateProfile")
+    public String updateProfile(@ModelAttribute("user") User updatedUser, HttpSession session, RedirectAttributes redirectAttributes) {
         User sessionUser = (User) session.getAttribute("user");
-        try {
-            String msg = userService.updateUser(sessionUser, user);
-            return "redirect:/profile";
-        }catch (Exception e){
-            model.addAttribute("msg", e.getMessage());
-            return "redirect:/profile";
+        if (sessionUser == null) {
+            // User is not logged in or session expired
+            return "redirect:/login";
         }
-    }*/
+
+        // Call the service layer to update the user in the database
+        User savedUser = userService.updateUserDetails(updatedUser);
+
+        // Update the user object in the session
+        if (savedUser != null) {
+            session.setAttribute("user", savedUser);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update profile.");
+        }
+
+        return "redirect:/dashboard";
+    }
+
     @GetMapping(value = "/addNewWebsites")
     public String addNewWebsites(){
         return "addNewWebsites.html";
     }
+
 }

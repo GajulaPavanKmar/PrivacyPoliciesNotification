@@ -5,15 +5,14 @@ import com.github.difflib.patch.Patch;
 import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
 import com.privacypolicies.PrivacyPoliciesNotification.Repository.WebScrapingRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -40,149 +39,187 @@ public class WebScrappingService {
     @Autowired
     private WebScrapingRepo webScrapingRepo;
 
-    private static final String[] PRIVACY_KEYWORDS = {"privacy", "privacy policy"};
-
+//    New code
 
     public String scrapePrivacyPolicy(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
-        String scrapedPolicy = scrapeWithJsoup(privacyOfWeb, url, store);
-        if (scrapedPolicy == null) {
-            scrapedPolicy = scrapeWithSelenium(privacyOfWeb, url, store);
+        // Attempt to find the privacy policy link using the methods you provided
+        String privacyUrl = findPrivacyLink(url);
+        if (privacyUrl != null) {
+            // Scrape the content from the found privacy policy URL
+            return scrapePrivacyPolicyContent(privacyOfWeb, privacyUrl, store);
+        } else {
+            log.error("No privacy policy link found for URL: {}", url);
+            return null;
         }
-        return scrapedPolicy != null ? scrapedPolicy : "Privacy policy not found.";
     }
 
-    private String scrapeWithJsoup(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
+    private String findPrivacyLink(String url) {
         try {
-            Document homepage = Jsoup.connect(url).get();
-            Element privacyLinkElement = findPrivacyLink(homepage);
-            if (privacyLinkElement != null) {
-                String privacyUrl = privacyLinkElement.absUrl("href");
-                Document privacyPolicyPage = Jsoup.connect(privacyUrl)
-                        .userAgent("Mozilla/5.0")
-                        .timeout(10 * 1000)
-                        .get();
-                String policyText = privacyPolicyPage.text();
-                if (!policyText.isEmpty()) {
-                    if(store){
-                        webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+            Connection.Response initialResponse = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+                    .method(Connection.Method.GET)
+                    .execute(); // First connect to get cookies
+
+            Document homepage = initialResponse.parse(); // Parse homepage with received cookies
+            Elements links = homepage.select("footer a:matchesOwn((?i)privacy|privacy policy|privacy notice|privacy statement|data protection|terms of use|legal notice)");
+            if (links.isEmpty()) {
+                // Define an ordered list of possible texts for privacy policies
+                List<String> orderedPrivacyTexts = Arrays.asList(
+                        "privacy", "privacy policy", "privacy notice", "privacy statement", "data protection", "terms of use", "legal notice"
+                );
+
+                // Check the footer for each of the ordered privacy texts
+                for (String text : orderedPrivacyTexts) {
+                    links = homepage.select(String.format(
+                            "footer a:containsOwn(%s), div.footer a:containsOwn(%s)", text, text
+                    ));
+                    if (!links.isEmpty()) {
+                        return links.first().absUrl("href");
                     }
-                    return policyText;
                 }
+
+                // If no link found in the footer with the ordered privacy texts, check the entire document
+                for (String text : orderedPrivacyTexts) {
+                    links = homepage.select(String.format("a:containsOwn(%s)", text));
+                    if (!links.isEmpty()) {
+                        return links.first().absUrl("href");
+                    }
+                }
+
+                // If no specific text matches, use the original broader search
+                Elements broadMatchLinks = homepage.select("a[href~=(?i)\\b(privacy|policy|legal|terms|protection)\\b]");
+                if (!broadMatchLinks.isEmpty()) {
+                    return broadMatchLinks.first().absUrl("href");
+                }
+            }else {
+                return links.first().absUrl("href");
+            }
+
+        } catch (HttpStatusException e) {
+            log.error("HTTP error fetching URL. Status={}, URL={}", e.getStatusCode(), url, e);
+            if (e.getStatusCode() == 403) {
+                return findPrivacyLinkWithSelenium(url);
             }
         } catch (IOException e) {
-            log.error("IOException occurred while fetching URL: {}", url, e);
+            log.error("IOException occurred while fetching URL using Jsoup: {}", url, e);
         } catch (Exception e) {
-            log.error("Unexpected error occurred", e);
+            log.error("Unexpected error occurred while fetching URL using Jsoup: {}", url, e);
         }
-        return null;
-    }
-
-    private String scrapeWithSelenium(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
-        webDriver.get(url);
-        WebElement privacyPolicyLink = findPrivacyPolicyLink(webDriver);
-        if (privacyPolicyLink != null) {
-            privacyPolicyLink.click();
-            new WebDriverWait(webDriver, Duration.ofSeconds(5))
-                    .until(webDriver1 -> ((JavascriptExecutor) webDriver1)
-                            .executeScript("return document.readyState")
-                            .equals("complete"));
-            String privacyPolicy = extractPrivacyPolicyText();
-            if (!privacyPolicy.isEmpty()) {
-                if(store){
-                    webScrapingRepo.saveWebPolicy(privacyOfWeb, privacyPolicy);
-                }
-                return privacyPolicy;
-            }
-        }
-        return null; // Indicate that Selenium also failed
+        // Fallback to Selenium
+        return findPrivacyLinkWithSelenium(url);
     }
 
 
-    private String extractPrivacyPolicyText() {
-        String[] containerSelectors = {
-                "article", "section", "div#privacy", "div.privacy-policy",
-                "main", "div.content", "footer"
-        };
-        StringBuilder extractedText = new StringBuilder();
+    private String findPrivacyLinkWithSelenium(String url) {
+        WebDriver webDriver = setupWebDriver(); // Configure and return a WebDriver
 
-        for (String selector : containerSelectors) {
-            try {
-                List<WebElement> elements = webDriver.findElements(By.cssSelector(selector));
-                for (WebElement element : elements) {
-                    extractedText.append(element.getText()).append("\n\n");
-                }
-                if (!extractedText.toString().isEmpty()) {
-                    break;
-                }
-            } catch (Exception ignored) {
-            }
-        }
-
-        if (extractedText.toString().isEmpty()) {
-            extractedText.append(webDriver.findElement(By.tagName("body")).getText());
-        }
-
-        return extractedText.toString().trim();
-    }
-
-
-    private WebElement findPrivacyPolicyLink(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        List<String> linkTexts = Arrays.asList(
-                "Privacy Policy", "Privacy Notice", "Privacy",
-                "Privacy and Cookies", "Data Protection"
-        );
-
-        for (String linkText : linkTexts) {
-            WebElement linkElement = tryFindElement(wait, By.linkText(linkText));
-            if (linkElement != null) return linkElement;
-
-            WebElement partialLinkElement = tryFindElement(wait, By.partialLinkText(linkText));
-            if (partialLinkElement != null) return partialLinkElement;
-        }
-        return null;
-    }
-
-    private WebElement tryFindElement(WebDriverWait wait, By by) {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-        } catch (Exception e) {
-            return null; // Return null if element is not found within the timeout
-        }
-    }
+            webDriver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS); // Disable implicit waits
+            webDriver.get(url);
 
-    private Element findPrivacyLink(Document document) {
-        String[] cssSelectors = new String[]{
-                "footer a[href]", // Privacy links are often in the footer
-                "nav a[href]", // Or in the main navigation
-                "a[href*='privacy']", // Links containing 'privacy' in the href attribute
-                "a[href*='legal']", // Some sites categorize privacy under 'legal' sections
-        };
+            // Handle any potential alerts or pop-ups
+            try {
+                WebDriverWait alertWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
+                alertWait.until(ExpectedConditions.alertIsPresent());
+                webDriver.switchTo().alert().accept();
+            } catch (NoAlertPresentException e) {
+                // No alert was present, continue with execution
+            } catch (TimeoutException e) {
+                // Alert did not appear in time
+                log.warn("No alert present within the time frame: {}", e.getMessage());
+            }
 
-        List<String> privacyKeywords = Arrays.asList("privacy policy", "privacy notice", "privacy", "data protection");
+            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(20)); // Use a more generous timeout for finding elements
+            List<String> possibleTexts = Arrays.asList(
+                    "Privacy Policy", "Privacy Notice", "Privacy",
+                    "Privacy and Cookies", "Data Protection", "Privacy Statement");
 
-        for (String selector : cssSelectors) {
-            for (String keyword : privacyKeywords) {
-                Elements foundLinks = document.select(selector).stream()
-                        .filter(link -> link.text().toLowerCase().contains(keyword.toLowerCase()))
-                        .collect(Collectors.toCollection(Elements::new));
-                if (!foundLinks.isEmpty()) {
-                    return foundLinks.first();
+            for (String text : possibleTexts) {
+                try {
+                    WebElement link = wait.until(ExpectedConditions.visibilityOfElementLocated(By.partialLinkText(text)));
+                    ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", link);
+                    wait.until(ExpectedConditions.elementToBeClickable(link));  // Recheck if clickable after scrolling
+                    if (link.isDisplayed()) {  // Additional check to confirm element is displayed
+                        return link.getAttribute("href");
+                    }
+                } catch (TimeoutException ex) {
+                    // Continue searching for other texts
+                    log.warn("Timeout while searching for text '{}': {}", text, ex.getMessage());
                 }
             }
-        }
-        Elements links = document.select("a[href]");
-        for (Element link : links) {
-            String hrefValue = link.attr("href").toLowerCase();
-            for (String keyword : privacyKeywords) {
-                if (link.text().toLowerCase().contains(keyword.toLowerCase()) || hrefValue.contains(keyword.replace(" ", "").toLowerCase())) {
-                    return link;
-                }
-            }
+        } catch (NoSuchElementException e) {
+            log.error("Privacy policy link not found on the page using Selenium: {}", url, e);
+        } catch (WebDriverException e) {
+            log.error("WebDriver exception occurred using Selenium: {}", url, e);
+            e.printStackTrace();  // Print stack trace for detailed debugging information
+        } finally {
+            webDriver.quit();  // Ensure the WebDriver is quit after execution to free up resources
         }
         return null;
     }
 
+    private WebDriver setupWebDriver() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("start-maximized"); // Start browser maximized, using this for non-headless mode
+        options.setPageLoadStrategy(PageLoadStrategy.NORMAL); // Adjust page load strategy as needed
+        return new ChromeDriver(options);
+    }
+
+
+    private String scrapePrivacyPolicyContent(PrivacyOfWeb privacyOfWeb, String privacyUrl, boolean store) {
+        String policyText = null;
+        // First attempt with Jsoup
+        try {
+            Document privacyPolicyPage = Jsoup.connect(privacyUrl)
+                    .userAgent("Mozilla/5.0")
+                    .timeout(10 * 1000)
+                    .get();
+            policyText = extractTextUsingSelectors(privacyPolicyPage);
+        } catch (IOException e) {
+            log.error("Jsoup failed to fetch privacy policy content: {}", privacyUrl, e);
+        }
+        // Check if Jsoup successfully retrieved the content
+        if (policyText == null || policyText.isEmpty()) {
+            // Fallback to Selenium if Jsoup fails
+            policyText = scrapeWithSelenium(privacyUrl);
+        }
+        // Check the content retrieved by Selenium
+        if (policyText != null && !policyText.isEmpty()) {
+            if (store) {
+                webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+            }
+            return policyText;
+        } else {
+            log.error("Both Jsoup and Selenium failed to retrieve privacy policy content from: {}", privacyUrl);
+            return "Privacy policy text not found.";
+        }
+    }
+
+    private String extractTextUsingSelectors(Document document) {
+        // Define common selectors used in privacy policy pages
+        String[] selectors = new String[]{"article", "section", "div#privacy", "div.policy", "main", "div.content"};
+        for (String selector : selectors) {
+            Elements elements = document.select(selector);
+            if (!elements.isEmpty()) {
+                return elements.text(); // Return text of the first matching element
+            }
+        }
+        return document.body().text(); // Fallback to entire body text if no specific elements are found
+    }
+
+    private String scrapeWithSelenium(String url) {
+        try {
+            webDriver.get(url);
+            // Wait until the page is completely loaded
+            new WebDriverWait(webDriver, Duration.ofSeconds(10))
+                    .until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
+            // This uses a broad approach to capture as much text as possible
+            return webDriver.findElement(By.tagName("body")).getText();
+        } catch (Exception e) {
+            log.error("Selenium failed to fetch content from URL: {}", url, e);
+            return null;
+        }
+    }
 
 
     public String anyDiff(){

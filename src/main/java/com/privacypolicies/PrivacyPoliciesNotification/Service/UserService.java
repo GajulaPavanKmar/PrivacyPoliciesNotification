@@ -51,11 +51,20 @@ public class UserService implements UserDetailsService {
     }
 
 
-    /*public String updateUser(User sessionUser, User user) {
-        Optional<User> optionalUser = userRepository.findByUserId(sessionUser.getUserId());
-        if (optionalUser.isPresent()) {
-            sessionUser.getUserEmail(user.);
-            optionalUser.setFirstName();
+
+    public User updateUserDetails(User user) {
+        // Assume we have a UserRepository to handle database operations
+        // Validate user details here if necessary
+        User existingUser = userRepository.findById(user.getUserId()).orElse(null);
+        if (existingUser != null) {
+            existingUser.setUserEmail(user.getUserEmail());
+            existingUser.setFirstName(user.getFirstName());
+            existingUser.setLastName(user.getLastName());
+            // Update other fields as necessary
+
+            return userRepository.save(existingUser);
         }
-    }*/
+        return null;
+    }
+
 }

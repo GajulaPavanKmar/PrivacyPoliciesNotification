@@ -22,6 +22,7 @@ public class ProjectSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/","/home", "/assets/css/**", "/assets/js/**", "/assets/images/**").permitAll()
+                        .requestMatchers("/signUp").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
@@ -37,15 +38,7 @@ public class ProjectSecurityConfig {
                         .logoutSuccessUrl("/login")
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
-                        .permitAll())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED) // Define session creation policy
-                        .sessionFixation(sessionFixation -> sessionFixation.migrateSession()) // Use new session upon authentication
-                        .invalidSessionUrl("/login?invalid") // Redirect to login on invalid session
-                        .maximumSessions(1) // Allow only one session per user
-                        .maxSessionsPreventsLogin(true) // Prevent login if max sessions exceeded
-                        .expiredUrl("/login?expired") // Redirect to login on session expired
-                );
+                        .permitAll());
 
         return http.build();
     }
