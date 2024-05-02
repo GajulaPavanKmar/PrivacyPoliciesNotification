@@ -24,7 +24,7 @@ public class PrivacyPolicyMonitor {
 
 
             } else {
-                return "No changes detected in the privacy policy.";
+                return null;
             }
         } catch (NoSuchAlgorithmException e) {
             return "Error while checking for updates.";

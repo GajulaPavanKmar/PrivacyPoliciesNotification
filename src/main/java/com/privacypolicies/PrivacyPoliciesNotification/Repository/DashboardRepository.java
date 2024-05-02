@@ -21,10 +21,10 @@ public class DashboardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<PrivacyOfWeb> userWebsites(){
-        String sql = "SELECT * FROM privacyofweb";
+    public List<PrivacyOfWeb> userWebsites(Long userId){
+        String sql = "SELECT * FROM privacyofweb where user_id =?";
         var rowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
-        List<PrivacyOfWeb> values =  jdbcTemplate.query(sql,rowMapper);
+        List<PrivacyOfWeb> values =  jdbcTemplate.query(sql,new Object[]{userId}, rowMapper);
         return values;
     }
 

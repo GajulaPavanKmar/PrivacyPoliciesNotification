@@ -43,25 +43,28 @@ public class ChangeDetectionController {
             currentPolicy = webScrappingService.scrapePrivacyPolicy(userWebsite, userWebsite.getWebsiteUrl(), false);
             if(!(currentPolicy.equals(""))) {
                 change = privacyPolicyMonitor.checkForUpdates(storedPolicy,currentPolicy, userWebsite.getWebsiteId());
-                String emailBody = String.format(
-                        "Hello, Pavan " +
-                                "\n\nWe have detected a change in the privacy policy in " +
-                                "\n\nWebsite Name: %s\nWebsite URL: %s\n\nChange in privacy policies detected." +
-                                "\n\n\nThank & Regards" +
-                                "\nNotification Team",
-                        userWebsite.getWebsiteName(), userWebsite.getWebsiteUrl()
-                );
-                String emailAddress = user.getUserEmail();
-                try {
-                    emailService.sendSimpleMessage(
-                            emailAddress,
-                            "New website was added to your list",
-                            emailBody
+                if(!(change.equals("") || change.equals(null))) {
+                    String emailBody = String.format(
+                            "Hello, User " +
+                                    "\n\nWe have detected a change in the privacy policy in " +
+                                    "\n\nWebsite Name: %s\nWebsite URL: %s\n\nChange in privacy policies detected." +
+                                    "\n\n\nThank & Regards" +
+                                    "\nNotification Team",
+                            userWebsite.getWebsiteName(), userWebsite.getWebsiteUrl()
                     );
-                    model.addAttribute("emailStatus", "Email sent successfully");
-                } catch (Exception e) {
-                    model.addAttribute("emailStatus", "Failed to send email");
+                    String emailAddress = user.getUserEmail();
+                    try {
+                        emailService.sendSimpleMessage(
+                                emailAddress,
+                                "New website was added to your list",
+                                emailBody
+                        );
+                        model.addAttribute("emailStatus", "Email sent successfully");
+                    } catch (Exception e) {
+                        model.addAttribute("emailStatus", "Failed to send email");
+                    }
                 }
+
             }
         }
         userWebsite = dashboardService.specificWebsite(websiteId);

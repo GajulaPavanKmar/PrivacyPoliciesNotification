@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "User")
-public class User implements UserDetails {
+public class User{
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
@@ -49,39 +49,4 @@ public class User implements UserDetails {
     @Transient
     private boolean enabled = true;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // This assumes all users have the same authority. Modify as necessary.
-        return Collections.singletonList(new SimpleGrantedAuthority("USER"));
-    }
-
-    @Override
-    public String getPassword() {
-        return userPassword;
-    }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
 }

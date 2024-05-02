@@ -50,7 +50,8 @@ public class DashboardController {
                 return "redirect:/login";
             }
         }
-        List<PrivacyOfWeb> userWebsites = dashboardService.loginDashboard();
+        Long userId = sessionUser.getUserId();
+        List<PrivacyOfWeb> userWebsites = dashboardService.loginDashboard(userId);
         model.addAttribute("listOfValues",userWebsites);
         model.addAttribute("user",sessionUser);
 

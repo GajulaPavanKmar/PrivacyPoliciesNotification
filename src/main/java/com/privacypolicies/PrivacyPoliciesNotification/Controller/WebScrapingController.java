@@ -31,9 +31,9 @@ public class WebScrapingController {
         User user = (User) session.getAttribute("user");
         privacyOfWeb.setUser(user);
         String privacy = webScrappingService.scrapePrivacyPolicy(privacyOfWeb, privacyOfWeb.getWebsiteUrl(), true);
-        if(!privacy.equals("") ){
+        if(! (privacy.equals("") || privacy.equals(null))){
             String emailBody = String.format(
-                    "Hello, Pavan " +
+                    "Hello, User " +
                             "\n\nYou have added new website into your list Please find the details below." +
                             "\n\nWebsite Name: %s\nWebsite URL: %s\n\n" +
                             "\n\n\n Thank & Regards" +

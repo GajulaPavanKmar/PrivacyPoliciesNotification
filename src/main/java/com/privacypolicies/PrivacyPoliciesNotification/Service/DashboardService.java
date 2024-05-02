@@ -13,8 +13,8 @@ public class DashboardService {
     @Autowired
     private DashboardRepository dashboardRepository;
 
-    public List<PrivacyOfWeb> loginDashboard(){
-        return dashboardRepository.userWebsites();
+    public List<PrivacyOfWeb> loginDashboard(Long userId){
+        return dashboardRepository.userWebsites(userId);
     }
 
     public String previousPolicy(Long websiteId) {
