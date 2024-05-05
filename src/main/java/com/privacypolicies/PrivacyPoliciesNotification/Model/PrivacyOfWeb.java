@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Table(name = "PrivacyOfWeb")
@@ -30,4 +32,10 @@ public class PrivacyOfWeb {
 
     @Column(name = "current_policy")
     private String currentPolicy;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "last_checked")
+    private LocalDateTime lastChecked;
 }

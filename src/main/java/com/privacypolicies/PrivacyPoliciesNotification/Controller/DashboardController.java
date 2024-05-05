@@ -33,20 +33,18 @@ public class DashboardController {
     @GetMapping(value = "/dashboard")
     public String dashboardPage(Model model,HttpSession session){
         User sessionUser = (User) session.getAttribute("user");
-        if(sessionUser == null){
+        if (sessionUser == null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userName = authentication.getName();
-            User User = userRepository.findByUserEmail(userName);
-            if(User!=null){
-                sessionUser = User;
-                // Store user in session
-                session.setAttribute("user", sessionUser);
-                if (authentication != null && authentication.isAuthenticated()) {
-                    User user = (User) authentication.getPrincipal();
+            if (authentication != null && authentication.isAuthenticated()) {
+                // Retrieve the user from the principal (assuming it is already loaded)
+                Object principal = authentication.getPrincipal();
+                if (principal instanceof User) {
+                    sessionUser = (User) principal;
+                    session.setAttribute("user", sessionUser);
                 }
-                System.out.println(sessionUser.toString());
-            }else{
-                System.out.println("User not found with email: " + userName);
+            }
+            if (sessionUser == null) {
+                System.out.println("User not found in session or authentication. Redirecting to login.");
                 return "redirect:/login";
             }
         }

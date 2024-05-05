@@ -17,6 +17,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Patch;
+import com.github.difflib.patch.DeltaType;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -229,28 +233,57 @@ public class WebScrappingService {
     }
 
 
-    public String anyDiff(){
+    public String anyDiff() {
         List<PrivacyOfWeb> listValues = webScrapingRepo.thePreviousOne();
         StringBuilder differences = new StringBuilder();
 
-        for( PrivacyOfWeb listValue : listValues){
+        for (PrivacyOfWeb listValue : listValues) {
             String prevPolicy = listValue.getPreviousPolicy();
             String updatedPolicy = listValue.getCurrentPolicy();
 
-            List<String> original = Arrays.asList(prevPolicy.split("/n"));
-            List<String> revised = Arrays.asList(updatedPolicy.split("/n"));
-            Patch<String> patch = DiffUtils.diff(original, revised);
-            if (!patch.getDeltas().isEmpty()) {
-                differences.append("Differences found:\n");
-                patch.getDeltas().forEach(delta -> differences.append(delta.toString()).append("\n"));
+            List<String> original = Arrays.asList(prevPolicy.split("\n"));
+            List<String> revised = Arrays.asList(updatedPolicy.split("\n"));
+
+            Patch<String> patch;
+            try {
+                patch = DiffUtils.diff(original, revised);
+                if (!patch.getDeltas().isEmpty()) {
+                    differences.append("Differences found:\n");
+                    for (AbstractDelta<String> delta : patch.getDeltas()) {
+                        switch (delta.getType()) {
+                            case CHANGE:
+                                differences.append("Changed from: \n")
+                                        .append(String.join("\n", delta.getSource().getLines()))
+                                        .append("\nTo: \n")
+                                        .append(String.join("\n", delta.getTarget().getLines()))
+                                        .append("\n");
+                                break;
+                            case DELETE:
+                                differences.append("Deleted: \n")
+                                        .append(String.join("\n", delta.getSource().getLines()))
+                                        .append("\n");
+                                break;
+                            case INSERT:
+                                differences.append("Inserted: \n")
+                                        .append(String.join("\n", delta.getTarget().getLines()))
+                                        .append("\n");
+                                break;
+                        }
+                        differences.append("\n");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+
         if (differences.length() == 0) {
             return "No differences found.";
         } else {
             return differences.toString();
         }
     }
+
 
     public String showPolicy() {
         String policy = webScrapingRepo.getPolicy();

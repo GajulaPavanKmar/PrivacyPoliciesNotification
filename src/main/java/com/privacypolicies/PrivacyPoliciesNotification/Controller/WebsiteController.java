@@ -54,16 +54,4 @@ public class WebsiteController {
         return "redirect:/dashboard";
     }
 
-
-    /*@GetMapping("/addNewWebsites")
-    public String addNewWebsite(Model model) {
-        PrivacyOfWeb privacyOfWeb = new PrivacyOfWeb();
-        model.addAttribute("website", privacyOfWeb);
-        return "add_website";  // Name of the new website form view
-    }*/
-    /*@PostMapping("/saveWebsite")
-    public String saveWebsite(@ModelAttribute("website") PrivacyOfWeb privacyOfWeb) {
-        websiteService.saveWebsite(privacyOfWeb);
-        return "redirect:/dashboard";
-    }*/
 }

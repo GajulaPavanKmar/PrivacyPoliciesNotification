@@ -43,7 +43,7 @@ public class ChangeDetectionController {
             currentPolicy = webScrappingService.scrapePrivacyPolicy(userWebsite, userWebsite.getWebsiteUrl(), false);
             if(!(currentPolicy.equals(""))) {
                 change = privacyPolicyMonitor.checkForUpdates(storedPolicy,currentPolicy, userWebsite.getWebsiteId());
-                if(!(change.equals("") || change.equals(null))) {
+                if(change.equals("Changed")) {
                     String emailBody = String.format(
                             "Hello, User " +
                                     "\n\nWe have detected a change in the privacy policy in " +
@@ -54,6 +54,7 @@ public class ChangeDetectionController {
                     );
                     String emailAddress = user.getUserEmail();
                     try {
+
                         emailService.sendSimpleMessage(
                                 emailAddress,
                                 "New website was added to your list",
@@ -71,14 +72,4 @@ public class ChangeDetectionController {
         model.addAttribute("listOfValues",userWebsite);
         return "LoggedInUserPages/websiteDifference";
     }
-//    @RequestMapping("/findDifference")
-//    public String detectChange(@ModelAttribute("privacyOfWeb") PrivacyOfWeb privacyOfWeb, Model model){
-//        List<PrivacyOfWeb> details = dashboardService.loginDashboard();
-//        String change = "";
-//        for (PrivacyOfWeb detail : details) {
-////            change = privacyPolicyMonitor.checkForUpdates(detail.getPreviousPolicy(),detail.getUpdatedPolicy());
-//        }
-//        model.addAttribute("value",change);
-//        return "dashboard";
-//    }
 }

@@ -20,7 +20,7 @@ public class WebsiteRepo {
     }
 
     public boolean deleteWebsite(int websiteId) {
-        String sql = "DELETE FROM PrivacyOfWeb WHERE website_id=?";
+        String sql = "DELETE FROM privacyofweb WHERE website_id=?";
         try{
             int rowsAffected = jdbcTemplate.update(sql, websiteId);
             if (rowsAffected > 0) {

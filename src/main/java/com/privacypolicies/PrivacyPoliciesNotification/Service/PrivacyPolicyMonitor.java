@@ -20,11 +20,11 @@ public class PrivacyPolicyMonitor {
             String lastHash = HashUtilConfig.generateSha256Hash(currentPolicy); // Retrieve the last hash from where you stored it
             if (!currentHash.equals(lastHash)) {
                 int updatePolicy = privacyPolicyMonitorRepo.updatePolicies(storedPolicy, currentPolicy, websiteId);
-                return "Privacy policy has changed.";
+                return "Changed";
 
 
             } else {
-                return null;
+                return "No change.";
             }
         } catch (NoSuchAlgorithmException e) {
             return "Error while checking for updates.";
