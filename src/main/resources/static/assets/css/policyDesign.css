@@ -1,0 +1,13 @@
+.custom-table-height th:nth-child(1), .custom-table-height td:nth-child(1) {
+    width: 12.5%;
+}
+.custom-table-height th:nth-child(2), .custom-table-height td:nth-child(2) {
+    width: 12.5%;
+}
+.custom-table-height th:nth-child(3), .custom-table-height td:nth-child(3),
+.custom-table-height th:nth-child(4), .custom-table-height td:nth-child(4) {
+    width: 35%;
+}
+.custom-table-height th:nth-child(5), .custom-table-height td:nth-child(5) {
+    width: 5%;
+}

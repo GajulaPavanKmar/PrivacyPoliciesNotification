@@ -59,7 +59,6 @@ header {
 .card:hover {
     transform: translateY(-10px); /* Hover effect */
 }
-
 footer.bg-dark {
     margin-top: auto; /* Pushes the footer to the bottom */
 }

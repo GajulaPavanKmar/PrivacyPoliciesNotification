@@ -43,14 +43,20 @@ public class WebScrappingService {
     @Autowired
     private WebScrapingRepo webScrapingRepo;
 
-//    New code
+    @Autowired
+    private ChatGptService chatGptService;
+
 
     public String scrapePrivacyPolicy(PrivacyOfWeb privacyOfWeb, String url, boolean store) {
         // Attempt to find the privacy policy link using the methods you provided
         String privacyUrl = findPrivacyLink(url);
         if (privacyUrl != null) {
             // Scrape the content from the found privacy policy URL
-            return scrapePrivacyPolicyContent(privacyOfWeb, privacyUrl, store);
+            privacyOfWeb.setWebsitePrivacyLink(privacyUrl);
+            String privacy =  scrapePrivacyPolicyContent(privacyOfWeb, privacyUrl, store);
+
+            return privacy;
+
         } else {
             log.error("No privacy policy link found for URL: {}", url);
             return null;
@@ -197,7 +203,14 @@ public class WebScrappingService {
         // Check the content retrieved by Selenium
         if (policyText != null && !policyText.isEmpty()) {
             if (store) {
-                webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText);
+                List<String> instructions = Arrays.asList(
+                        "I have extracted the text of a privacy policy from a website, but it includes redundant headers, navigation items, and other irrelevant information. Please clean up the text by removing any repeated headers, navigational elements, and leaving only the  privacy policy",
+                        "Here is the cleaned-up text of a privacy policy. Please provide a summary that highlights the key points relevant to an end-user. Focus on what information is collected, why it is collected, how it is used, the user's control over their data, and security measures. The summary should be easily understandable and useful for helping users make informed decisions about their data privacy."
+                );
+                String summarizedText = chatGptService.summarizeText(policyText, instructions);
+                privacyOfWeb.setCurrentPolicySummary(summarizedText);
+                privacyOfWeb.setCurrentPolicy(policyText);
+                webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText, privacyUrl);
             }
             return policyText;
         } else {

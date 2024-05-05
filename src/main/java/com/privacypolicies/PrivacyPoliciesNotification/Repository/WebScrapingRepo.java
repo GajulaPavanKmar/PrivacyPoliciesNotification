@@ -1,7 +1,6 @@
 package com.privacypolicies.PrivacyPoliciesNotification.Repository;
 
 import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
-import com.privacypolicies.PrivacyPoliciesNotification.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,16 +19,19 @@ public class WebScrapingRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int saveWebPolicy(PrivacyOfWeb privacyOfWeb, String htmlContent){
+    public int saveWebPolicy(PrivacyOfWeb privacyOfWeb, String htmlContent, String privacyUrl){
         if (privacyOfWeb.getUser() == null || privacyOfWeb.getUser().getUserId() == null) {
             throw new IllegalStateException("PrivacyOfWeb must have a non-null User with a non-null userId");
         }
-
-        String sql = "INSERT INTO privacyofweb (user_ID,website_Name,  website_Url, previous_Policy, current_Policy,created_at) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO privacyofweb " +
+                "(user_ID,website_Name,  website_Url, previous_Policy, " +
+                "current_Policy,created_at,website_privacy_link, current_policy_summary) " +
+                "VALUES (?,?,?,?,?,?,?,?)";
         LocalDateTime now = LocalDateTime.now();
 
-        int count = jdbcTemplate.update(sql,privacyOfWeb.getUser().getUserId(), privacyOfWeb.getWebsiteName(),
-                privacyOfWeb.getWebsiteUrl(), "", htmlContent,now);
+        int count = jdbcTemplate.update(sql,privacyOfWeb.getUser().getUserId(),
+                privacyOfWeb.getWebsiteName(),privacyOfWeb.getWebsiteUrl(), "",
+                htmlContent,now,privacyUrl, privacyOfWeb.getCurrentPolicySummary());
         return count;
     }
     public List<PrivacyOfWeb> thePreviousOne(){
@@ -46,4 +48,5 @@ public class WebScrapingRepo {
         String policy = previousPolicy.toString();
         return policy;
     }
+
 }

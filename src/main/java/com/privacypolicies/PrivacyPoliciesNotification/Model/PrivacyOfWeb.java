@@ -38,4 +38,13 @@ public class PrivacyOfWeb {
 
     @Column(name = "last_checked")
     private LocalDateTime lastChecked;
+
+    @Column(name = "current_policy_summary")
+    private String currentPolicySummary;
+
+    @Column(name = "previous_policy_summary")
+    private String previousPolicySummary;
+
+    @Column(name = "website_privacy_link")
+    private String websitePrivacyLink;
 }

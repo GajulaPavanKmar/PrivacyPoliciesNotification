@@ -2,6 +2,7 @@ package com.privacypolicies.PrivacyPoliciesNotification.Controller;
 
 import com.privacypolicies.PrivacyPoliciesNotification.Model.PrivacyOfWeb;
 import com.privacypolicies.PrivacyPoliciesNotification.Model.User;
+import com.privacypolicies.PrivacyPoliciesNotification.Repository.WebScrapingRepo;
 import com.privacypolicies.PrivacyPoliciesNotification.Service.EmailService;
 import com.privacypolicies.PrivacyPoliciesNotification.Service.WebScrappingService;
 import jakarta.servlet.http.HttpSession;
@@ -13,8 +14,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import com.privacypolicies.PrivacyPoliciesNotification.Service.ChatGptService;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class WebScrapingController {
@@ -26,6 +29,13 @@ public class WebScrapingController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ChatGptService chatGptService;
+
+    @Autowired
+    private WebScrapingRepo webScrapingRepo;
+
     @PostMapping(value = "/scrapAndSave")
     public String scrapAndSave(@ModelAttribute("privacyOfWeb") PrivacyOfWeb privacyOfWeb,
                                HttpSession session,
@@ -42,6 +52,8 @@ public class WebScrapingController {
                             "\n Notification Team",
                     privacyOfWeb.getWebsiteName(), privacyOfWeb.getWebsiteUrl()
             );
+
+
             model.addAttribute("content",privacy);
             String emailAddress = user.getUserEmail();
             try {
