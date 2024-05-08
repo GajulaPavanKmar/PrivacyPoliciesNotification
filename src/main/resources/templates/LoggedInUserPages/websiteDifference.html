@@ -41,7 +41,7 @@
                         <td th:text="${website.currentPolicySummary}">Updated Policy Placeholder</td>
                         <td th:text ="${website.previousPolicySummary}">Previous Policy Placeholder</td>
                         <td>
-                            <a th:href="@{'/openDetailedPolicy/' + ${website.websiteId}}" class="btn" onclick="return confirm('Are you sure you want to Open this?')">
+                            <a th:href="@{'/fullPolicy/' + ${website.websiteId}}" class="btn" onclick="return confirm('Are you sure you want to Open this?')">
                                 <img src="images/delete-icon.svg" th:src="@{/assets/images/link.svg}" alt="Delete" width="24" height="24"/>
                             </a>
                         </td>

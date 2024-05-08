@@ -32,7 +32,7 @@ public class AutomaticService {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 16 18 * * *", zone = "America/New_York")
+    @Scheduled(cron = "0 0 4 * * *", zone = "America/New_York")
     public void updateAllPrivacyPolicies() {
         List<User> allUsers = userRepository.findAll();
         allUsers.forEach(this::updatePrivacyPolicyForUser);

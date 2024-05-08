@@ -72,4 +72,14 @@ public class ChangeDetectionController {
         model.addAttribute("listOfValues",userWebsite);
         return "LoggedInUserPages/websiteDifference";
     }
+
+    @GetMapping("/fullPolicy/{websiteId}")
+    public String fullPolicy(@PathVariable("websiteId") Long websiteId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        PrivacyOfWeb userWebsite = dashboardService.specificWebsite(websiteId);
+        userWebsite.setUser(user);
+        userWebsite = dashboardService.specificWebsite(websiteId);
+        model.addAttribute("listOfValues",userWebsite);
+        return "LoggedInUserPages/fullPolicy";
+    }
 }

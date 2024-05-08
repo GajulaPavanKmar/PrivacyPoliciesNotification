@@ -71,11 +71,11 @@ public class WebScrappingService {
                     .execute(); // First connect to get cookies
 
             Document homepage = initialResponse.parse(); // Parse homepage with received cookies
-            Elements links = homepage.select("footer a:matchesOwn((?i)privacy|privacy policy|privacy notice|privacy statement|data protection|terms of use|legal notice)");
+            Elements links = homepage.select("footer a:matchesOwn((?i)privacy|privacy policy|privacy notice|privacy statement|data protection)");
             if (links.isEmpty()) {
                 // Define an ordered list of possible texts for privacy policies
                 List<String> orderedPrivacyTexts = Arrays.asList(
-                        "privacy", "privacy policy", "privacy notice", "privacy statement", "data protection", "terms of use", "legal notice"
+                        "privacy", "privacy policy", "privacy notice", "privacy statement", "data protection"
                 );
 
                 // Check the footer for each of the ordered privacy texts
@@ -97,7 +97,7 @@ public class WebScrappingService {
                 }
 
                 // If no specific text matches, use the original broader search
-                Elements broadMatchLinks = homepage.select("a[href~=(?i)\\b(privacy|policy|legal|terms|protection)\\b]");
+                Elements broadMatchLinks = homepage.select("a[href~=(?i)\\b(privacy|policy|protection)\\b]");
                 if (!broadMatchLinks.isEmpty()) {
                     return broadMatchLinks.first().absUrl("href");
                 }

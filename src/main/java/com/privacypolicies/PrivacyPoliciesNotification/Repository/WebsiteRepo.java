@@ -35,13 +35,13 @@ public class WebsiteRepo {
     }
 
     public PrivacyOfWeb valuesForEdit(int websiteId) {
-        String sql = "SELECT * FROM PrivacyOfWeb WHERE website_id=?";
+        String sql = "SELECT * FROM privacyofweb WHERE website_id=?";
         var RowMapper = BeanPropertyRowMapper.newInstance(PrivacyOfWeb.class);
         return jdbcTemplate.queryForObject(sql, RowMapper, websiteId);
     }
 
     public int updateWebsite(PrivacyOfWeb privacyOfWeb) {
-        String sql = "Update PrivacyOfWeb set website_name=?, website_Url =? where website_id=?";
+        String sql = "Update privacyofweb set website_name=?, website_Url =? where website_id=?";
         return jdbcTemplate.update(sql,privacyOfWeb.getWebsiteName(),
                 privacyOfWeb.getWebsiteUrl(),privacyOfWeb.getWebsiteId());
     }
