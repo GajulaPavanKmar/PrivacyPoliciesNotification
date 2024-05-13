@@ -42,8 +42,8 @@ public class PrivacyOfWeb {
     @Column(name = "current_policy_summary")
     private String currentPolicySummary;
 
-    @Column(name = "previous_policy_summary")
-    private String previousPolicySummary;
+    @Column(name = "what_is_the_difference")
+    private String whatIsTheDifference;
 
     @Column(name = "website_privacy_link")
     private String websitePrivacyLink;

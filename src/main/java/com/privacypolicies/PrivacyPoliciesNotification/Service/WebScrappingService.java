@@ -209,6 +209,7 @@ public class WebScrappingService {
                 );
                 String summarizedText = chatGptService.summarizeText(policyText, instructions);
                 privacyOfWeb.setCurrentPolicySummary(summarizedText);
+
                 privacyOfWeb.setCurrentPolicy(policyText);
                 webScrapingRepo.saveWebPolicy(privacyOfWeb, policyText, privacyUrl);
             }

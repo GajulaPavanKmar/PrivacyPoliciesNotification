@@ -24,4 +24,8 @@ public class PrivacyPolicyMonitorRepo {
         String sql ="Update privacyofweb set previous_policy =?, current_Policy =?, last_checked = ? where website_id =?";
         return jdbcTemplate.update(sql, storedPolicy, currentPolicy, now, websiteId);
     }
+    public int compareAndSaveSummary(String comparisonResult, String summarizedText, int websiteId){
+        String sql ="Update privacyofweb set what_is_the_difference =? , current_policy_summary=? where website_id =?";
+        return jdbcTemplate.update(sql, comparisonResult, summarizedText,  websiteId);
+    }
 }

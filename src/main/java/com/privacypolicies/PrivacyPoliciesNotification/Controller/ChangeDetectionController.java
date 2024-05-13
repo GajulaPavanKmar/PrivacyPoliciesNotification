@@ -42,7 +42,7 @@ public class ChangeDetectionController {
         if(userWebsite != null) {
             currentPolicy = webScrappingService.scrapePrivacyPolicy(userWebsite, userWebsite.getWebsiteUrl(), false);
             if(!(currentPolicy.equals(""))) {
-                change = privacyPolicyMonitor.checkForUpdates(storedPolicy,currentPolicy, userWebsite.getWebsiteId());
+                change = privacyPolicyMonitor.checkForUpdates(storedPolicy,currentPolicy, userWebsite);
                 if(change.equals("Changed")) {
                     String emailBody = String.format(
                             "Hello, User " +

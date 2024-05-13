@@ -59,6 +59,45 @@ header {
 .card:hover {
     transform: translateY(-10px); /* Hover effect */
 }
-footer.bg-dark {
-    margin-top: auto; /* Pushes the footer to the bottom */
+.footer {
+    background-color: #333; /* Dark background for the footer */
+    color: #fff; /* White text color */
+    padding: 20px 0; /* Padding around the footer */
+}
+
+.footer-link {
+    color: #fff; /* White link color */
+    text-decoration: none; /* No underline */
+}
+
+.footer-link:hover {
+    color: #ccc; /* Light grey on hover */
+    text-decoration: underline; /* Underline on hover */
+}
+
+ul.list-unstyled {
+    padding: 0;
+    list-style-type: none; /* Remove default list styling */
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center; /* Centering content */
+}
+
+.col-md-4, .col-md-8 {
+    flex: 1; /* Flex property to manage width */
+    min-width: 200px; /* Minimum width for responsiveness */
+    margin-bottom: 15px; /* Bottom margin */
+}
+
+@media (min-width: 768px) {
+    .col-md-4 {
+        max-width: 33.3333%; /* Width for larger screens */
+    }
+    .col-md-8 {
+        max-width: 66.6667%; /* Width for larger screens */
+    }
 }

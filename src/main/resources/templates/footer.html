@@ -5,9 +5,20 @@
     <link rel="stylesheet" th:href="@{assets/css/homeDesign.css}">
 </head>
 <body>
-<footer class="bg-dark text-white py-4">
+<footer class="footer bg-dark text-white py-4">
     <div class="container text-center">
-        <p>&copy; 2023 PrivacyNotifier. All rights reserved.</p>
+        <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/homeprivacypolicy}" class="footer-link"> Privacy Policy</a></li>
+                    <li><a th:href="@{/}" class="footer-link">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="col-md-8">
+                <p>&copy; 2023 PrivacyNotifier. All rights reserved.</p>
+            </div>
+        </div>
     </div>
 </footer>
 

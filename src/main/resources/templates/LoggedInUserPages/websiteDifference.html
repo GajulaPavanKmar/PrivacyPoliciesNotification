@@ -26,7 +26,7 @@
                     <th>Website Name</th>
                     <th>Privacy Policy URL</th>
                     <th>Current Policy Summary</th>
-                    <th>Previous Policy</th>
+                    <th>What Changed</th>
                     <th>Full Policy View</th>
                 </tr>
                 </thead>
@@ -39,7 +39,7 @@
                             <a th:href="@{${website.websitePrivacyLink}}" target="_blank" th:text="${website.websitePrivacyLink}">Website Privacy Link Placeholder</a>
                         </td>
                         <td th:text="${website.currentPolicySummary}">Updated Policy Placeholder</td>
-                        <td th:text ="${website.previousPolicySummary}">Previous Policy Placeholder</td>
+                        <td th:text ="${website.whatIsTheDifference}">Previous Policy Placeholder</td>
                         <td>
                             <a th:href="@{'/fullPolicy/' + ${website.websiteId}}" class="btn" onclick="return confirm('Are you sure you want to Open this?')">
                                 <img src="images/delete-icon.svg" th:src="@{/assets/images/link.svg}" alt="Delete" width="24" height="24"/>

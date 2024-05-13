@@ -23,6 +23,7 @@ public class ProjectSecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/","/home", "/assets/css/**", "/assets/js/**", "/assets/images/**").permitAll()
                         .requestMatchers("/signUp").permitAll()
+                        .requestMatchers("homeprivacypolicy").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
